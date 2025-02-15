@@ -1,16 +1,16 @@
 // 필요한 모듈 가져오기
-const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
-const cors = require('cors');
-const bcrypt = require('bcrypt'); // 비밀번호 해싱을 위한 bcrypt 라이브러리
-require('dotenv').config({ path: '../MyTripper_Server/.env' }); // ✅ .env 파일 경로 명시적으로 설정
+const express = require("express");
+const { createClient } = require("@supabase/supabase-js");
+const cors = require("cors");
+const bcrypt = require("bcrypt"); // 비밀번호 해싱을 위한 bcrypt 라이브러리
+require("dotenv").config({ path: "./.env" }); // ✅ .env 파일 경로 명시적으로 설정
 
 // Express 애플리케이션 생성
 const app = express();
 const port = 3000; // 서버가 실행될 포트 번호
 
 // Supabase 클라이언트 설정
-require('dotenv').config(); //환경변수 로드드
+require('dotenv').config(); //환경변수 로드
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 // ⚠️ 실제 서비스에서는 API 키를 .env 파일에 저장하세요!
@@ -20,19 +20,23 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // 환경 변수에서 secret key를 가져오거나 기본값 설정
 
 // 미들웨어 설정
+app.use(express.json()); // JSON 데이터를 처리할 수 있도록 설정
 app.use(
   cors({
     origin: '*',
-    method: 'GET,POST,PUT,DELETE',
+    methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true,
   })
 ); // CORS 설정 (프론트엔드와 통신 허용)
-app.use(express.json()); // JSON 데이터를 처리할 수 있도록 설정
+
 //-----------------------------------------------------------
 app.get('/api/keys', (req, res) => {
   res.json({
-    TOGETHER_API_KEY: process.env.TOGETHER_API_KEY_JH,
+    TOGETHER_API_KEY_JH: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_WG: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_HS: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_IS: process.env.TOGETHER_API_KEY,
     GROQ_API_KEY: process.env.GROQ_API_KEY_JH,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY_JH,
     UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY_JH,
