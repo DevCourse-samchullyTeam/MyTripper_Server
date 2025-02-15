@@ -29,7 +29,10 @@ app.use(express.json()); // JSON 데이터를 처리할 수 있도록 설정
 //-----------------------------------------------------------
 app.get("/api/keys", (req, res) => {
   res.json({
-    TOGETHER_API_KEY: process.env.TOGETHER_API_KEY_JH,
+    TOGETHER_API_KEY_JH: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_WG: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_HS: process.env.TOGETHER_API_KEY,
+    TOGETHER_API_KEY_IS: process.env.TOGETHER_API_KEY,
     GROQ_API_KEY: process.env.GROQ_API_KEY_JH,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY_JH,
     UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY_JH,
