@@ -176,7 +176,6 @@ app.get('/myinfo', async (req, res) => {
 // 마이페이지 내 정보 수정
 app.put('/myinfo/modifiy', async (req, res) => {
   const userData = req.body;
-
   try {
     const { data, error } = await supabase.from('users').select('*').eq('id', userData.id).single();
 
@@ -185,8 +184,7 @@ app.put('/myinfo/modifiy', async (req, res) => {
         message: `내 정보 수정 실패 : ${userData.id} 해당 유저의 정보가 없습니다.`,
       });
     }
-
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
     // 업데이트 객체 구성
     const updateData = {
       name: userData.name,
