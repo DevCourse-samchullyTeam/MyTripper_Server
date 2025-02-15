@@ -3,7 +3,7 @@ const express = require("express");
 const { createClient } = require("@supabase/supabase-js");
 const cors = require("cors");
 const bcrypt = require("bcrypt"); // 비밀번호 해싱을 위한 bcrypt 라이브러리
-require("dotenv").config({ path: "../MyTripper_Server/.env" }); // ✅ .env 파일 경로 명시적으로 설정
+require("dotenv").config({ path: "./.env" }); // ✅ .env 파일 경로 명시적으로 설정
 
 // Express 애플리케이션 생성
 const app = express();
