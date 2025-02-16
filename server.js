@@ -204,6 +204,15 @@ app.put('/myinfo/modifiy', async (req, res) => {
   }
 });
 
+// 마이페이지 내 글 조회
+app.get('/mypost', async (req, res) => {
+  const user_id = req.query.id;
+  const getDatas = await supabase.from('TravelPlan').select('*').eq('user_id', user_id);
+
+  console.log(getDatas.data);
+  res.send(getDatas.data);
+});
+
 // 🟢 서버 실행
 app.listen(port, () => {
   console.log(`✅ 서버가 실행 중: http://localhost:${port}`);
