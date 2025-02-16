@@ -17,5 +17,13 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uiseon98/MyTripper_Server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/uiseon98/MyTripper_Server/issues"
+  },
+  "homepage": "https://github.com/uiseon98/MyTripper_Server#readme",
   "description": ""
 }
