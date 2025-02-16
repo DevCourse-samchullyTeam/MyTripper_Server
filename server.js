@@ -39,8 +39,10 @@ app.get('/api/keys', (req, res) => {
     TOGETHER_API_KEY_WG: process.env.TOGETHER_API_KEY_WG,
     TOGETHER_API_KEY_HS: process.env.TOGETHER_API_KEY_HS,
     TOGETHER_API_KEY_IS: process.env.TOGETHER_API_KEY_IS,
+    TOGETHER_API_KEY_YB: process.env.TOGETHER_API_KEY_YB,
     GROQ_API_KEY: process.env.GROQ_API_KEY_JH,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY_JH,
+    GEMINI_API_KEY_JH: process.env.GEMINI_API_KEY_JH,
+    GEMINI_API_KEY_YB: process.env.GEMINI_API_KEY_YB,
     UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY_JH,
   });
 });
@@ -208,7 +210,7 @@ app.put('/myinfo/modifiy', async (req, res) => {
 });
 
 // 마이페이지 내 글 조회
-app.get('/mypost', async (req, res) => {
+app.get("/mypost", async (req, res) => {
   try {
     const user_id = req.query.id;
     const pagelimit = 5;
@@ -220,10 +222,10 @@ app.get('/mypost', async (req, res) => {
 
     // 데이터 쿼리 (페이징 처리)
     const { data, error: dataError } = await supabase
-      .from('travelplan')
-      .select('*')
-      .eq('user_id', user_id)
-      .order('serial_number', { ascending: false })
+      .from("travelplan")
+      .select("*")
+      .eq("user_id", user_id)
+      .order("serial_number", { ascending: false })
       .range(startPageNum, endPageNum);
 
     if (dataError) {
@@ -232,9 +234,9 @@ app.get('/mypost', async (req, res) => {
 
     // user_id에 해당하는 총 데이터 개수를 가져오는 쿼리 (실제 데이터를 가져오지 않음)
     const { count, error: countError } = await supabase
-      .from('travelplan')
-      .select('*', { count: 'exact' }) // 총 개수만 계산
-      .eq('user_id', user_id);
+      .from("travelplan")
+      .select("*", { count: "exact" }) // 총 개수만 계산
+      .eq("user_id", user_id);
     if (countError) {
       return res.status(500).send({ error: countError.message }); // 총 개수 쿼리 에러 처리
     }
@@ -246,7 +248,7 @@ app.get('/mypost', async (req, res) => {
     });
   } catch (error) {
     // 예상치 못한 오류를 처리
-    res.status(500).send({ error: '예기치 않은 오류가 발생했습니다.' });
+    res.status(500).send({ error: "예기치 않은 오류가 발생했습니다." });
   }
 });
 
