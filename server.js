@@ -206,11 +206,45 @@ app.put('/myinfo/modifiy', async (req, res) => {
 
 // 마이페이지 내 글 조회
 app.get('/mypost', async (req, res) => {
-  const user_id = req.query.id;
-  const getDatas = await supabase.from('TravelPlan').select('*').eq('user_id', user_id);
+  try {
+    const user_id = req.query.id;
+    const pagelimit = 5;
+    let pageNum = parseInt(req.query.pageNum) || 1; // pageNum이 유효한 숫자인지 확인하고, 아니면 1로 설정
+    if (pageNum < 1) pageNum = 1; // pageNum이 1보다 작을 수 없도록 처리
 
-  console.log(getDatas.data);
-  res.send(getDatas.data);
+    const startPageNum = (pageNum - 1) * pagelimit;
+    const endPageNum = startPageNum + pagelimit - 1;
+
+    // 데이터 쿼리 (페이징 처리)
+    const { data, error: dataError } = await supabase
+      .from('travelplan')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('serial_number', { ascending: false })
+      .range(startPageNum, endPageNum);
+
+    if (dataError) {
+      return res.status(500).send({ error: dataError.message }); // 데이터 쿼리 에러 처리
+    }
+
+    // user_id에 해당하는 총 데이터 개수를 가져오는 쿼리 (실제 데이터를 가져오지 않음)
+    const { count, error: countError } = await supabase
+      .from('travelplan')
+      .select('*', { count: 'exact' }) // 총 개수만 계산
+      .eq('user_id', user_id);
+    if (countError) {
+      return res.status(500).send({ error: countError.message }); // 총 개수 쿼리 에러 처리
+    }
+
+    // 데이터와 총 개수를 클라이언트로 전송
+    res.send({
+      data,
+      totalCount: count, // 일치하는 데이터의 총 개수 포함
+    });
+  } catch (error) {
+    // 예상치 못한 오류를 처리
+    res.status(500).send({ error: '예기치 않은 오류가 발생했습니다.' });
+  }
 });
 
 // 🟢 서버 실행
