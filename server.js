@@ -39,8 +39,10 @@ app.get("/api/keys", (req, res) => {
     TOGETHER_API_KEY_WG: process.env.TOGETHER_API_KEY_WG,
     TOGETHER_API_KEY_HS: process.env.TOGETHER_API_KEY_HS,
     TOGETHER_API_KEY_IS: process.env.TOGETHER_API_KEY_IS,
+    TOGETHER_API_KEY_YB: process.env.TOGETHER_API_KEY_YB,
     GROQ_API_KEY: process.env.GROQ_API_KEY_JH,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY_JH,
+    GEMINI_API_KEY_JH: process.env.GEMINI_API_KEY_JH,
+    GEMINI_API_KEY_YB: process.env.GEMINI_API_KEY_YB,
     UNSPLASH_API_KEY: process.env.UNSPLASH_API_KEY_JH,
   });
 });
@@ -348,6 +350,26 @@ app.get("/comment", async (req, res) => {
     res.json(data);
   } catch (error) {
     return res.status(500).send({ error: dataError.message }); // 데이터 쿼리 에러 처리
+  }
+});
+
+// 게시글 댓글 추가
+app.post('/comment/add', async (req, res) => {
+  const { c_user_id, c_s_num, comment, comment_day } = req.body;
+
+  try {
+    // 데이터 쿼리 (페이징 처리)
+    const { data, error } = await supabase.from('comment').insert({ c_user_id, c_s_num, comment, comment_day });
+
+    if (error) {
+      console.log(error.message);
+      return res.status(500).json({ message: '댓글 저장 실패', error: error.message });
+    }
+
+    res.status(200).json({ message: '댓글 저장 성공' }); // 성공 응답 반환
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: '댓글 저장 실패', error: error.message });
   }
 });
 
