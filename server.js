@@ -234,7 +234,7 @@ app.put("/myinfo/modifiy", async (req, res) => {
 });
 
 // 마이페이지 내 글 조회
-app.get('/mypost', async (req, res) => {
+app.get("/mypost", async (req, res) => {
   try {
     const user_id = req.query.id;
     const pagelimit = 5;
@@ -246,10 +246,10 @@ app.get('/mypost', async (req, res) => {
 
     // 데이터 쿼리 (페이징 처리)
     const { data, error: dataError } = await supabase
-      .from('travelplan')
-      .select('*')
-      .eq('user_id', user_id)
-      .order('serial_number', { ascending: false })
+      .from("travelplan")
+      .select("*")
+      .eq("user_id", user_id)
+      .order("serial_number", { ascending: false })
       .range(startPageNum, endPageNum);
 
     if (dataError) {
@@ -258,9 +258,9 @@ app.get('/mypost', async (req, res) => {
 
     // user_id에 해당하는 총 데이터 개수를 가져오는 쿼리 (실제 데이터를 가져오지 않음)
     const { count, error: countError } = await supabase
-      .from('travelplan')
-      .select('*', { count: 'exact' }) // 총 개수만 계산
-      .eq('user_id', user_id);
+      .from("travelplan")
+      .select("*", { count: "exact" }) // 총 개수만 계산
+      .eq("user_id", user_id);
     if (countError) {
       return res.status(500).send({ error: countError.message }); // 총 개수 쿼리 에러 처리
     }
@@ -272,7 +272,7 @@ app.get('/mypost', async (req, res) => {
     });
   } catch (error) {
     // 예상치 못한 오류를 처리
-    res.status(500).send({ error: '예기치 않은 오류가 발생했습니다.' });
+    res.status(500).send({ error: "예기치 않은 오류가 발생했습니다." });
   }
 });
 
@@ -285,7 +285,7 @@ app.get("/api/reviews", async (req, res) => {
     const start = (page - 1) * limit;
     const end = start + limit - 1;
 
-    // DB 테이블명 "travelplan" (실제로 존재하는지 확인!)
+    // DB 테이블명 "travelplan"
     let query = supabase
       .from("travelplan")
       .select(
@@ -297,16 +297,24 @@ app.get("/api/reviews", async (req, res) => {
       .order("serial_number", { ascending: false })
       .range(start, end);
 
-    const { mbti, search } = req.query;
+    const { mbti, search, withReview } = req.query;
+
+    // MBTI 필터
     if (mbti && mbti !== "MBTI별 게시글") {
       const mbtiArr = mbti.split(",").map((x) => x.trim().toUpperCase());
       query = query.in("plan_mbti", mbtiArr);
     }
 
+    // 검색어 필터
     if (search) {
       query = query.or(
         `sub_title.ilike.%${search}%,content_text.ilike.%${search}%`
       );
+    }
+
+    // 후기 필터링
+    if (withReview === "true") {
+      query = query.not("review", "is", null);
     }
 
     const { data, count, error } = await query;
