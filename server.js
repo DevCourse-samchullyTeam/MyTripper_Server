@@ -5,6 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt'); // 비밀번호 해싱을 위한 bcrypt 라이브러리
 const jwt = require('jsonwebtoken'); // JWT 라이브러리 추가
 const path = require('path'); //--
+const { get } = require('http');
 
 // Express 애플리케이션 생성
 const app = express();
@@ -314,6 +315,26 @@ app.get('/comment', async (req, res) => {
     res.json(data);
   } catch (error) {
     return res.status(500).send({ error: dataError.message }); // 데이터 쿼리 에러 처리
+  }
+});
+
+// 게시글 댓글 추가
+app.post('/comment/add', async (req, res) => {
+  const { c_user_id, c_s_num, comment, comment_day } = req.body;
+
+  try {
+    // 데이터 쿼리 (페이징 처리)
+    const { data, error } = await supabase.from('comment').insert({ c_user_id, c_s_num, comment, comment_day });
+
+    if (error) {
+      console.log(error.message);
+      return res.status(500).json({ message: '댓글 저장 실패', error: error.message });
+    }
+
+    res.status(200).json({ message: '댓글 저장 성공' }); // 성공 응답 반환
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: '댓글 저장 실패', error: error.message });
   }
 });
 
