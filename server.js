@@ -5,7 +5,6 @@ const cors = require('cors');
 const bcrypt = require('bcrypt'); // 비밀번호 해싱을 위한 bcrypt 라이브러리
 const jwt = require('jsonwebtoken'); // JWT 라이브러리 추가
 const path = require('path'); //--
-const { get } = require('http');
 
 // Express 애플리케이션 생성
 const app = express();
