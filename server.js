@@ -322,12 +322,11 @@ app.get("/api/reviews", async (req, res) => {
     let query = supabase
       .from("travelplan")
       .select(
-        "serial_number, sub_title, content_text, review, plan_mbti, post_day, image_url",
+        "serial_number, sub_title, content_text, plan_mbti, post_day, image_url, comment_count",
         {
           count: "exact",
         }
       )
-      .order("serial_number", { ascending: false })
       .range(start, end);
 
     const { mbti, search, sort } = req.query;
