@@ -330,7 +330,7 @@ app.get("/api/reviews", async (req, res) => {
       .order("serial_number", { ascending: false })
       .range(start, end);
 
-    const { mbti, search, withReview } = req.query;
+    const { mbti, search, sort } = req.query;
 
     // MBTI 필터
     if (mbti && mbti !== "MBTI별 게시글") {
@@ -348,14 +348,22 @@ app.get("/api/reviews", async (req, res) => {
     // 후기 필터링
     if (withReview === "true") {
       query = query.not("review", "is", null);
+
+    // 정렬 방식 적용
+    if (sort === "comment") {
+      query = query.order("comment_count", { ascending: false }); // 댓글순
+    } else {
+      query = query.order("serial_number", { ascending: false }); // 최신순 (기본)
     }
 
     const { data, count, error } = await query;
+
     if (error) throw error;
 
+    console.log("📊 서버 응답 데이터:", data); // 로그로 데이터 확인
     res.json({ success: true, data, totalCount: count ?? 0 });
   } catch (err) {
-    console.error("후기 게시글 조회 에러:", err);
+    console.error("❌ 후기 게시글 조회 에러:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -378,6 +386,26 @@ app.get("/comment", async (req, res) => {
     res.json(data);
   } catch (error) {
     return res.status(500).send({ error: dataError.message }); // 데이터 쿼리 에러 처리
+  }
+});
+
+// 게시글 댓글 추가
+app.post('/comment/add', async (req, res) => {
+  const { c_user_id, c_s_num, comment, comment_day } = req.body;
+
+  try {
+    // 데이터 쿼리 (페이징 처리)
+    const { data, error } = await supabase.from('comment').insert({ c_user_id, c_s_num, comment, comment_day });
+
+    if (error) {
+      console.log(error.message);
+      return res.status(500).json({ message: '댓글 저장 실패', error: error.message });
+    }
+
+    res.status(200).json({ message: '댓글 저장 성공' }); // 성공 응답 반환
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: '댓글 저장 실패', error: error.message });
   }
 });
 
